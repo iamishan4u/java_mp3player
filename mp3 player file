@@ -1,0 +1,108 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package gaanasuno;
+
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
+;
+
+/**
+ *
+ * @author ishan
+ */
+public class GaanaSuno {
+FileInputStream FIS;
+BufferedInputStream BIS;
+
+ public Player player  ; 
+ 
+ public long pausevariable;
+ public long TotalLength;
+ public String FileLocation;
+ public void stop()
+ {
+     if(player!=null)
+     {
+         player.close();
+         pausevariable=0;
+         TotalLength=0;
+     }
+ }
+ 
+  public void pause()
+ {
+     if(player!=null)
+     {
+            try {
+               pausevariable= FIS.available();
+                player.close();
+            } catch (IOException ex) {
+               
+            }
+     }
+ }
+    public void play(String path) throws IOException
+    {
+        try {
+            FIS=new FileInputStream(path);
+            BIS=new BufferedInputStream(FIS);
+            player=new Player(BIS);
+          TotalLength=  FIS.available();
+          FileLocation= path+"";
+        }
+            catch (FileNotFoundException | JavaLayerException ex) {
+            
+                
+          
+        }
+        new Thread()
+        {
+            @Override
+            public void run() throws NullPointerException
+            {
+                try {
+                    player.play();
+                } catch (JavaLayerException ex) {
+                    
+                }
+            }
+            
+        }.start();
+    }
+    public void resume() throws IOException
+    {
+        try {
+            FIS=new FileInputStream(FileLocation);
+            BIS=new BufferedInputStream(FIS);
+            player=new Player(BIS);
+            FIS.skip(TotalLength-pausevariable);
+        } catch (FileNotFoundException | JavaLayerException ex) {
+          
+        }
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try {
+                    player.play();
+                } catch (JavaLayerException ex) {
+                    
+                }
+            }
+            
+        }.start();
+    }
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here
+    }
+}
